@@ -30,34 +30,36 @@ class RiverpodTodoApp extends StatelessWidget {
       child: MaterialApp(
         home: Scaffold(
           body: Center(
-            child: Consumer((context, read) {
-              // could simply use:
-              // read(repositoryInitializerProvider()).when()
-              return read(initializerProvider).when(
-                data: (_) {
-                  // Flutter Data repositories are ready at this point!
-                  final repository = read(todoRepositoryProvider);
-                  return GestureDetector(
-                    onDoubleTap: () async {
-                      print(
-                          (await repository.findOne(1, remote: false))?.title);
-                      final todo = await Todo(id: 1, title: 'blah')
-                          .init(context)
-                          .save(remote: false);
-                      print(keyFor(todo));
-                    },
-                    child:
-                        Text('Hello Flutter Data with Riverpod! $repository'),
-                  );
-                },
-                loading: () {
-                  return const CircularProgressIndicator();
-                },
-                error: (err, _) {
-                  return Text('An error occured: $err');
-                },
-              );
-            }),
+            child: Consumer(
+              builder: (context, read, child) {
+                // could simply use:
+                // read(repositoryInitializerProvider()).when()
+                return read(initializerProvider).when(
+                  data: (_) {
+                    // Flutter Data repositories are ready at this point!
+                    final repository = read(todoRepositoryProvider);
+                    return GestureDetector(
+                      onDoubleTap: () async {
+                        print((await repository.findOne(1, remote: false))
+                            ?.title);
+                        final todo = await Todo(id: 1, title: 'blah')
+                            .init(context)
+                            .save(remote: false);
+                        print(keyFor(todo));
+                      },
+                      child:
+                          Text('Hello Flutter Data with Riverpod! $repository'),
+                    );
+                  },
+                  loading: () {
+                    return const CircularProgressIndicator();
+                  },
+                  error: (err, _) {
+                    return Text('An error occured: $err');
+                  },
+                );
+              },
+            ),
           ),
         ),
       ),
